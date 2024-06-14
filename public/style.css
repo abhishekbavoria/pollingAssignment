@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+a{
+    text-decoration: none;
+}
+
+.register, .login, .polling, .chat {
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    width: 50%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.register h2, .login h2, .polling h2, .chat h2 {
+    margin-bottom: 20px;
+}
+
+.register form, .login form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.register label, .login label {
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.register input[type="text"],
+.register input[type="password"],
+.register input[type="email"],
+.register input[type="tel"],
+.login input[type="email"],
+.login input[type="text"],
+.login input[type="tel"],
+.login input[type="password"] {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.register button[type="submit"],
+.login button[type="submit"],
+.login-link a,
+.poll button {
+    background-color: #ABC5CE;
+    color: #fff;
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.register button[type="submit"]:hover,
+.login button[type="submit"]:hover,
+.login-link a:hover {
+    background-color: #4E514A;
+}
+
+.login-link p{
+    margin-bottom: 20px;
+}
+
+.polling button, .chat button {
+    background-color: #ABC5CE;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+    transition: background-color 0.3s;
+}
+
+.polling button:hover, .chat button:hover {
+    background-color: #4E514A;
+}
+
+.polling #pollResults p, .chat #messages div {
+    text-align: left;
+    margin: 10px 20px;
+}
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+    .register, .login, .polling, .chat {
+        width: 95%;
+    }
+}
+
+.typing{
+   display: flex; 
+}
+
+#messages {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    margin-bottom: 10px;
+}
+
+#messageInput {
+    width: calc(100% - 80px);
+    padding: 10px;
+    margin-right: 10px;
+}
+
+#typingIndicator {
+    font-style: italic;
+    color: #888;
+    text-align: left;
+    width: 100%;
+}
