@@ -126,3 +126,56 @@ a{
     text-align: left;
     width: 100%;
 }
+
+.createPoll {
+    display: block;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+  }
+  
+  .createPoll h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  #createPoll label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: bold;
+  }
+  
+  #createPoll input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+  }
+  
+  #createPoll input[type="text"]:focus {
+    border-color: #007BFF;
+    outline: none;
+  }
+  
+  #createPoll button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #ABC5CE;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #createPoll button[type="submit"]:hover {
+    background-color: #4E514A;
+  }
