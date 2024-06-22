@@ -80,24 +80,30 @@
         <button type="submit">Login</button>
       </form>
     </div>
+    <div id="createPoll" class="createPoll" style="display: none">
+      <h2>Create Poll</h2>
+      <form id="pollForm" onsubmit="event.preventDefault(); createPoll();">
+        <label for="pollQuestion">Question:</label>
+        <input
+          id="pollQuestion"
+          type="text"
+          placeholder="Enter your question"
+          required
+        />
+        <label for="option1">Option 1:</label>
+        <input id="option1" type="text" placeholder="Enter option 1" required />
+        <label for="option2">Option 2:</label>
+        <input id="option2" type="text" placeholder="Enter option 2" required />
+        <label for="option3">Option 3:</label>
+        <input id="option3" type="text" placeholder="Enter option 3" required />
+        <label for="option4">Option 4:</label>
+        <input id="option4" type="text" placeholder="Enter option 4" required />
+        <button type="submit">Create Poll</button>
+      </form>
+    </div>
     <div id="poll" class="poll" style="display: none">
-      <h2>How do you primarily invest your money?</h2>
-      <button onclick="vote('Stocks')">Stocks</button>
-      <button onclick="vote('Real_estate')">Real estate</button>
-      <button onclick="vote('Mutual_funds')">Mutual funds</button>
-      <button onclick="vote('Cryptocurrencies')">Cryptocurrencies</button>
-      <div id="pollResults">
-        <p>Stocks - <span id="Stocks">0</span></p>
-        <p>Real Estate - <span id="Real_estate">0</span></p>
-        <p>
-          Mutual Funds -
-          <span id="Mutual_funds">0</span>
-        </p>
-        <p>
-          Cryptocurrencies -
-          <span id="Cryptocurrencies">0</span>
-        </p>
-      </div>
+      <h2>Polls</h2>
+      <div id="pollResults"></div>
     </div>
     <div id="chat" class="chat" style="display: none">
       <h2>Chat</h2>
