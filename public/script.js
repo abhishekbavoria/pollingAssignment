@@ -39,8 +39,8 @@ async function register() {
             const data = await response.json();
             localStorage.setItem('userId', data.userId);
             localStorage.setItem('id', data.id);
-            loginSuccess(data.username);
             toastr.success('Registration successful');
+            showLogin();
         } else {
             const errorData = await response.text();
             toastr.error(errorData || 'Registration failed');
@@ -54,15 +54,17 @@ function showLogin() {
     toggleDisplay(['register'], 'none');
     toggleDisplay(['login'], 'block');
 }
-function logout() {
 
+function logout() {
     localStorage.removeItem('userId');
     localStorage.removeItem('id');
+    localStorage.removeItem('token');
 
     document.getElementById('login').style.display = 'block';
     document.getElementById('register').style.display = 'none';
     document.getElementById('poll').style.display = 'none';
     document.getElementById('chat').style.display = 'none';
+    document.getElementById('createPoll').style.display = 'none';
     toastr.success('Logout successful');
 }
 
@@ -80,9 +82,15 @@ async function login() {
         });
 
         if (response.ok) {
+
+            localStorage.removeItem('userId');
+            localStorage.removeItem('id');
+            localStorage.removeItem('token');
+
             const data = await response.json();
             localStorage.setItem('userId', data.userId);
             localStorage.setItem('id', data.id);
+            localStorage.setItem('token', data.token);
             loginSuccess(data.username);
             toastr.success('Login successful');
         } else {
@@ -96,17 +104,62 @@ async function login() {
 
 function loginSuccess(username) {
     toggleDisplay(['register', 'login'], 'none');
-    toggleDisplay(['poll', 'chat'], 'block');
+    toggleDisplay(['poll', 'chat', 'createPoll'], 'block');
     socket.emit('login', localStorage.getItem('userId'));
 }
 
-function vote(option) {
-    socket.emit('vote', option);
+async function createPoll() {
+    const question = document.getElementById('pollQuestion').value;
+    const options = [
+        document.getElementById('option1').value,
+        document.getElementById('option2').value,
+        document.getElementById('option3').value,
+        document.getElementById('option4').value
+    ];
+
+    if (!question || options.some(option => !option)) {
+        toastr.error('Please fill in all fields');
+        return;
+    }
+
+    try {
+        const response = await fetch('/createPoll', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ question, options })
+        });
+
+        if (response.ok) {
+            toastr.success('Poll created successfully');
+            document.getElementById('pollForm').reset();
+        } else {
+            const errorData = await response.text();
+            toastr.error(errorData || 'Poll creation failed');
+        }
+    } catch (error) {
+        toastr.error('Poll creation failed');
+    }
+}
+
+function vote(pollId, option) {
+    socket.emit('vote', { pollId, option });
 }
 
 socket.on('updatePoll', (pollData) => {
-    Object.keys(pollData).forEach(option => {
-        document.getElementById(option).textContent = pollData[option];
+    const pollContainer = document.getElementById('pollResults');
+    pollContainer.innerHTML = '';
+    pollData.forEach(poll => {
+        const pollElement = document.createElement('div');
+        pollElement.innerHTML = `
+            <h3>${poll.question}</h3>
+            ${poll.options.map((option, index) => `
+                <button onclick="vote('${option}', '${poll._id}')">${option} - <span id="${poll._id}-${index}">${poll.votes[option] || 0}</span></button>
+            `).join('')}
+        `;
+        pollContainer.appendChild(pollElement);
     });
 });
 
@@ -188,6 +241,43 @@ socket.on('deleteChatMessage', (id) => {
     }
 });
 
+socket.on('newPoll', (poll) => {
+    addPollElement(poll);
+});
+
+function addPollElement(poll) {
+
+    const pollDiv = document.getElementById('poll');
+    const pollElement = document.createElement('div');
+    pollElement.innerHTML = `
+        <h3>${poll.question}</h3>
+        ${poll.options.map(option => `
+            <button onclick="vote('${poll._id}', '${option.option}')">${option.option} - ${option.count}</button>
+        `).join('')}
+    `;
+    pollDiv.appendChild(pollElement);
+}
+
+socket.on('allPolls', (polls) => {
+    const pollDiv = document.getElementById('poll');
+
+    while (pollDiv.firstChild) {
+        pollDiv.removeChild(pollDiv.firstChild);
+    }
+
+    polls.forEach(poll => {
+        const pollElement = document.createElement('div');
+        pollElement.innerHTML = `
+        <h3>${poll.question}</h3>
+        ${poll.options.map(option =>
+            `<button onclick="vote('${poll._id}', '${option.option}')">${option.option} - ${option.count}</button>`
+        ).join('')}
+    `;
+        pollDiv.appendChild(pollElement);
+    });
+});
+
+
 socket.on('error', (error) => {
     if (error.message === 'You are not authorized to edit this message') {
         toastr.error('You are not authorized to edit this message.');
@@ -196,4 +286,22 @@ socket.on('error', (error) => {
     } else {
         toastr.error(error.message || 'An error occurred');
     }
+});
+
+// Ensure socket connection includes token
+socket.on('connect', () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        socket.emit('authenticate', { token });
+    }
+});
+
+socket.on('authenticated', () => {
+    console.log('Socket authenticated');
+});
+
+socket.on('unauthorized', (msg) => {
+    console.log('Socket authentication failed:', msg);
+    toastr.error('Socket authentication failed. Please log in again.');
+    logout();
 });
